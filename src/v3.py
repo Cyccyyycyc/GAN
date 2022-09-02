@@ -16,6 +16,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch
 
+data_save_path = "../data_set/cifar10"
+model_save_path = "../net-module/V6W"
+img_save_path = "../images/Cifar10-images/CDCGAN-W-V6"
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--n_epochs", type=int, default=3000, help="number of epochs of training")
 parser.add_argument("--batch_size", type=int, default=64, help="size of the batches")
@@ -155,11 +159,11 @@ data_transform = transforms.Compose(
              transforms.ToTensor(),
              transforms.Normalize(mean=norm_mean, std=norm_std)])
 
-os.makedirs("../data_set/cifar10", exist_ok=True)
-os.makedirs("../net-module/V6W/Generator", exist_ok=True)
-os.makedirs("../net-module/V6W/Discriminator", exist_ok=True)
+os.makedirs(data_save_path, exist_ok=True)
+os.makedirs(model_save_path + "/Generator", exist_ok=True)
+os.makedirs(model_save_path + "/Discriminator", exist_ok=True)
 
-data_set = datasets.CIFAR10(root="../data_set/cifar10", train=True, download=True, transform=data_transform)
+data_set = datasets.CIFAR10(root=data_save_path, train=True, download=True, transform=data_transform)
 dataloader = DataLoader(dataset=data_set, batch_size=opt.batch_size, shuffle=True)
 
 # Optimizers
@@ -178,8 +182,8 @@ def sample_image(n_row, order):
     labels = np.array([num for _ in range(n_row) for num in range(n_row)])
     labels = Variable(LongTensor(labels))
     gen_imgs = generator(z, labels)
-    os.makedirs("../images/Cifar10-images/CDCGAN-W-V6",exist_ok=True)
-    save_image(gen_imgs.data, "../images/Cifar10-images/CDCGAN-W-V6/%d.png" % order, nrow=n_row, normalize=True)
+    os.makedirs(img_save_path,exist_ok=True)
+    save_image(gen_imgs.data, img_save_path + "/%d.png" % order, nrow=n_row, normalize=True)
 
 # ----------
 #  Training
@@ -243,8 +247,7 @@ for epoch in range(opt.n_epochs):
             sample_image(n_row=10, order=batches_done/opt.sample_interval)
         batches_done += 1
     if (epoch + 1) % opt.save_interval == 0:
-        torch.save(generator, "../net-module/V6W/Generator/G{}".format(epoch / opt.sample_interval))
-        torch.save(discriminator, "../net-module/V6W/Discriminator/D{}".format(epoch / opt.sample_interval))
-
+        torch.save(generator, model_save_path + "/Generator/G{}".format(epoch / opt.save_interval))
+        torch.save(discriminator, model_save_path + "/Discriminator/D{}".format(epoch / opt.save_interval))
 
 
