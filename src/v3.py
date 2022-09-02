@@ -1,4 +1,6 @@
-# Adam没变化 -> RMSProp没变化 -> clip_value from 0.01 to 0.1 棋盘状围影严重 -> Adam G加通道1024and加转置卷积3次
+# Adam 没变化 -> RMSProp 没变化 
+# -> clip_value from 0.01 to 0.1 棋盘状围影严重 
+# -> Adam G加通道1024and加转置卷积3次 没变化 -> SDG 没变化 -> RMSPropme 没变化
 
 import argparse
 import os
@@ -167,8 +169,8 @@ data_set = datasets.CIFAR10(root=data_save_path, train=True, download=True, tran
 dataloader = DataLoader(dataset=data_set, batch_size=opt.batch_size, shuffle=True)
 
 # Optimizers
-optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lr, betas=[opt.b1, opt.b2])
-optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lr, betas=[opt.b1, opt.b2])
+optimizer_G = torch.optim.RMSprop(generator.parameters(), lr=opt.lr)
+optimizer_D = torch.optim.RMSprop(discriminator.parameters(), lr=opt.lr)
 
 
 FloatTensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
@@ -247,7 +249,7 @@ for epoch in range(opt.n_epochs):
             sample_image(n_row=10, order=batches_done/opt.sample_interval)
         batches_done += 1
     if (epoch + 1) % opt.save_interval == 0:
-        torch.save(generator, model_save_path + "/Generator/G{}".format(epoch / opt.save_interval))
-        torch.save(discriminator, model_save_path + "/Discriminator/D{}".format(epoch / opt.save_interval))
+        torch.save(generator, model_save_path + "/Generator/G{}".format(epoch // opt.save_interval))
+        torch.save(discriminator, model_save_path + "/Discriminator/D{}".format(epoch // opt.save_interval))
 
 

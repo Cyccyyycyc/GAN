@@ -1,5 +1,7 @@
-# Adam没变化 -> RMSProp没变化 -> clip_value from 0.01 to 0.1 棋盘状围影严重 -> Adam G加通道and加转置卷积3次
-# G:先激活后bn,leaky -> relu 3个转置卷积 384通道
+# Adam没变化 -> RMSProp没变化 
+# -> clip_value from 0.01 to 0.1 棋盘状围影严重 
+# -> Adam G加通道and加转置卷积3次, G:先激活后bn,leaky 变 relu ,3个转置卷积 384通道
+
 import argparse
 import os
 import numpy as np
@@ -232,8 +234,8 @@ for epoch in range(opt.n_epochs):
             sample_image(n_row=10, order=batches_done/opt.sample_interval)
         batches_done += 1
     if (epoch + 1) % opt.save_interval == 0:
-        torch.save(generator, model_save_path + "/Generator/G{}".format(epoch / opt.save_interval))
-        torch.save(discriminator, model_save_path + "/Discriminator/D{}".format(epoch / opt.save_interval))
+        torch.save(generator, model_save_path + "/Generator/G{}".format(epoch // opt.save_interval))
+        torch.save(discriminator, model_save_path + "/Discriminator/D{}".format(epoch // opt.save_interval))
 
 
 

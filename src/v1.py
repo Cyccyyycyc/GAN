@@ -1,4 +1,6 @@
-# Adam没变化 -> RMSProp没变化 -> clip_value from 0.01 to 0.1 棋盘状围影严重 -> delete wc加大训练力度
+# Adam没变化 -> RMSProp没变化 
+# -> clip_value from 0.01 to 0.1 棋盘状围影严重
+# -> delete wc and increase epoch
 
 import argparse
 import os
@@ -245,7 +247,7 @@ for epoch in range(opt.n_epochs):
             sample_image(n_row=10, order=batches_done/opt.sample_interval)
         batches_done += 1
     if (epoch + 1) % opt.save_interval == 0:
-        torch.save(generator, model_save_path + "/Generator/G{}".format(epoch / opt.save_interval))
-        torch.save(discriminator, model_save_path + "/Discriminator/D{}".format(epoch / opt.save_interval))
+        torch.save(generator, model_save_path + "/Generator/G{}".format(epoch // opt.save_interval))
+        torch.save(discriminator, model_save_path + "/Discriminator/D{}".format(epoch // opt.save_interval))
 
 
